@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
@@ -23,7 +24,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 			const text = document.lineAt(position.line).text;
 
-			console.log('text', text)
 			const insideQuotes = (() => {
 				const left = text.substring(0, position.character);
 				const right = text.substring(position.character, text.length);
@@ -33,56 +33,32 @@ export function activate(context: vscode.ExtensionContext) {
 					return l[l.length - 1] + r[0];
 				} else return null;
 			})();
-			console.log('insideQuotes', insideQuotes)
 
 			if (insideQuotes !== null) {
-				const keys = Object.keys(completionSource);
-
-				const key = keys.find(key => insideQuotes.includes('\'' + key + ".'") || insideQuotes.includes('"' + key + '."'));
-				if (key) {
-					const keys1 = Object.keys((completionSource as any)[key]);
-					const key1 = keys1.find(x1 => insideQuotes.includes(key + "." + x1));
-					if (key1) {
-						console.log("been here");
-						const result = Object.keys(Object.values((completionSource as any)[key1]) as any).map(x => new vscode.CompletionItem(x));
-						console.log('result', result)
-						return result;
-					} else {
-						console.log("been here");
-						const result = keys1.map(x => new vscode.CompletionItem(x));
-						console.log('result', result)
-						return result;
-					}
-				} else {
-					return keys.map(x => new vscode.CompletionItem(x));
-				}
+				return getTokens(completionSource, insideQuotes);
 			} else return [];
 		},
 	};
 
-	// function getTokens(source: object, text: string) {
-	// 	const keys = Object.keys(source);
-
-	// 	const key = keys.find(key => text.includes('\'' + key + ".'") || text.includes('"' + key + '."'));
-	// 	if (key) {
-	// 		const keys1 = Object.keys((completionSource as any)[key]);
-	// 		const key1 = keys1.find(x1 => text.includes(key + "." + x1));
-	// 		if (key1) {
-	// 			console.log("been here");
-	// 			const result = Object.keys(Object.values((completionSource as any)[key1]) as any).map(x => new vscode.CompletionItem(x));
-	// 			console.log('result', result)
-	// 			return result;
-	// 		} else {
-	// 			console.log("been here");
-	// 			const result = keys1.map(x => new vscode.CompletionItem(x));
-	// 			console.log('result', result)
-	// 			return result;
-	// 		}
-	// 	}
-	// }
+	const getTokens = (source: { [key: string]: any }, text: string): vscode.CompletionItem[] => {
+		const keys = Object.keys(source);
+		const key = keys.find(key => text.includes(key + "."));
+		// TODO handle lower case
+		// const key = keys.map(x => x.toLowerCase()).find(key => text.toLowerCase().includes(key + "."));
+		// console.log("================ BEGIN =================");
+		// console.log('source', source)
+		// console.log('text', text)
+		// console.log('key', key)
+		// console.log("================= END ==================");
+		if (key) {
+			return getTokens(source[key], text);
+		} else {
+			return keys.map(x => new vscode.CompletionItem(x));
+		}
+	}
 
 	// let disp = vscode.languages.registerCompletionItemProvider(selector: DocumentSelector, provider: CompletionItemProvider<CompletionItem>, ...triggerCharacters: string[])
-	let disposable = vscode.languages.registerCompletionItemProvider("html", _provideCompletionItems)
+	let disposable = vscode.languages.registerCompletionItemProvider("html", _provideCompletionItems);
 
 	context.subscriptions.push(disposable);
 }
