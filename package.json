@@ -11,7 +11,9 @@
   ],
   "activationEvents": [
     "onCommand:i18n-code-completion.helloWorld",
-    "onLanguage:html"
+    "onLanguage:html",
+    "onLanguage:javascript",
+    "onLanguage:typescript"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -21,10 +23,15 @@
         "title": "Hello World"
       }
     ],
-		"html": {
-			"customData": [
-				"./src/index.json"
-			]
+    "configuration": {
+      "title": "JSON Intellisense",
+      "properties": {
+        "jsonIntellisense.sourcePath": {
+          "type": "string",
+          "default": "",
+          "description": "Source path"
+        }
+      }
     }
   },
   "scripts": {

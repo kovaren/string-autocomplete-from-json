@@ -18,9 +18,23 @@ export function activate(context: vscode.ExtensionContext) {
 			token: vscode.CancellationToken,
 			context: vscode.CompletionContext
 		) {
-			const fileName = 'C:\\projects\\i18n-code-completion\\index.json';
-			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(fileName));
+
+			let conf = vscode.workspace.getConfiguration('jsonIntellisense');
+
+			// vscode.window.showInformationMessage(conf.get('paths')!);
+
+			const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
+
+			// TODO handle relative paths
+			const fileName = conf.sourcePath || '\\index.json';
+			console.log('sourcePath', conf.sourcePath)
+			console.log('!!sourcePath', !!conf.sourcePath)
+			console.log("fileName", fileName);
+			
+			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(workspacePath + fileName));
 			const completionSource = JSON.parse(file.getText());
+			console.log('file', file)
+			console.log('completionSource', completionSource)
 
 			const text = document.lineAt(position.line).text;
 
@@ -55,12 +69,16 @@ export function activate(context: vscode.ExtensionContext) {
 		} else {
 			return keys.map(x => new vscode.CompletionItem(x));
 		}
-	}
+	};
 
 	// let disp = vscode.languages.registerCompletionItemProvider(selector: DocumentSelector, provider: CompletionItemProvider<CompletionItem>, ...triggerCharacters: string[])
-	let disposable = vscode.languages.registerCompletionItemProvider("html", _provideCompletionItems);
+	const disposable = [
+		vscode.languages.registerCompletionItemProvider("html", _provideCompletionItems),
+		vscode.languages.registerCompletionItemProvider("javascript", _provideCompletionItems),
+		vscode.languages.registerCompletionItemProvider("typescript", _provideCompletionItems)
+	];
 
-	context.subscriptions.push(disposable);
+	disposable.forEach(d => context.subscriptions.push(d));
 }
 
 // This method is called when your extension is deactivated
