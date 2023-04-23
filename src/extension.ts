@@ -7,10 +7,6 @@ import * as vscode from 'vscode';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "i18n-code-completion" is now active!');
-
 	// Get text between single quotes
 	// TODO handle double quotes
 	const insideQuotes = (text: string, position: vscode.Position) => {
@@ -31,19 +27,19 @@ export function activate(context: vscode.ExtensionContext) {
 			context: vscode.CompletionContext
 		) {
 
-			let conf = vscode.workspace.getConfiguration('jsonIntellisense');
+			let conf = vscode.workspace.getConfiguration('jsonCodeCompletion');
 
 			// vscode.window.showInformationMessage(conf.get('paths')!);
 
 			const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
 
 			// TODO handle relative paths
-			const fileName = conf.sourcePath || '\\index.json';
+			const fileName = conf.sourcePath;
 			console.log('sourcePath', conf.sourcePath)
 			console.log('!!sourcePath', !!conf.sourcePath)
 			console.log("fileName", fileName);
 
-			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(workspacePath + fileName));
+			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(workspacePath + '/' + fileName));
 			const completionSource = JSON.parse(file.getText());
 			console.log('file', file)
 			console.log('completionSource', completionSource)

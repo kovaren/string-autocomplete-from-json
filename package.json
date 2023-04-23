@@ -24,9 +24,9 @@
       }
     ],
     "configuration": {
-      "title": "JSON Intellisense",
+      "title": "JSON Code completion",
       "properties": {
-        "jsonIntellisense.sourcePath": {
+        "jsonCodeCompletion.sourcePath": {
           "type": "string",
           "default": "",
           "description": "Source path"
