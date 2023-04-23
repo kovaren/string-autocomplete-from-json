@@ -11,6 +11,18 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "i18n-code-completion" is now active!');
 
+	// Get text between single quotes
+	// TODO handle double quotes
+	const insideQuotes = (text: string, position: vscode.Position) => {
+		const left = text.substring(0, position.character);
+		const right = text.substring(position.character, text.length);
+		if (left.includes("'") && right.includes("'")) {
+			const l = left.split("'");
+			const r = right.split("'");
+			return l[l.length - 1] + r[0];
+		} else return null;
+	};
+
 	let _provideCompletionItems = {
 		async provideCompletionItems(
 			document: vscode.TextDocument,
@@ -30,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 			console.log('sourcePath', conf.sourcePath)
 			console.log('!!sourcePath', !!conf.sourcePath)
 			console.log("fileName", fileName);
-			
+
 			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(workspacePath + fileName));
 			const completionSource = JSON.parse(file.getText());
 			console.log('file', file)
@@ -38,18 +50,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 			const text = document.lineAt(position.line).text;
 
-			const insideQuotes = (() => {
-				const left = text.substring(0, position.character);
-				const right = text.substring(position.character, text.length);
-				if (left.includes("'") && right.includes("'")) {
-					const l = left.split("'");
-					const r = right.split("'");
-					return l[l.length - 1] + r[0];
-				} else return null;
-			})();
-
-			if (insideQuotes !== null) {
-				return getTokens(completionSource, insideQuotes);
+			const textInsideQuotes = insideQuotes(text, position);
+			if (textInsideQuotes !== null) {
+				return getTokens(completionSource, textInsideQuotes);
 			} else return [];
 		},
 	};
@@ -79,6 +82,30 @@ export function activate(context: vscode.ExtensionContext) {
 	];
 
 	disposable.forEach(d => context.subscriptions.push(d));
+	
+	// Open suggestions panel on press "."
+	context.subscriptions.push(
+		vscode.workspace.onDidChangeTextDocument(async (event) => {
+			const position = vscode.window.activeTextEditor?.selection.active;
+			if (position) {
+				const text = event.document.lineAt(position.line).text;
+				const textInsideQuotes = insideQuotes(text, position!);
+				if (!textInsideQuotes?.endsWith('.')) {
+					// TODO handle "." that is not at the end of the text?
+					return;
+				}
+			}
+
+			await vscode.commands.executeCommand(
+				'editor.action.triggerSuggest',
+				{
+					'triggerCharacter': '',
+					'triggerKind': vscode.CompletionTriggerKind.Invoke,
+					'position': position
+				}
+			);
+		})
+	);
 }
 
 // This method is called when your extension is deactivated
