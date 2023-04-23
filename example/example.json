@@ -1,0 +1,21 @@
+{
+    "user": {
+        "name": "John",
+        "email": "john@example.com",
+        "address": {
+            "street": "123 Main St",
+            "city": "Anytown",
+            "state": "CA",
+            "zip": "12345"
+        },
+        "favorites": {
+            "color": "blue",
+            "food": "pizza",
+            "movie": "Star Wars",
+            "music": {
+                "artist": "The Beatles",
+                "song": "Hey Jude"
+            }
+        }
+    }
+}
