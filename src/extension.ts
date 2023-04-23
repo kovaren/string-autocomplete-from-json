@@ -35,38 +35,45 @@ export function activate(context: vscode.ExtensionContext) {
 
 			// TODO handle relative paths
 			const fileName = conf.sourcePath;
-			console.log('sourcePath', conf.sourcePath)
-			console.log('!!sourcePath', !!conf.sourcePath)
-			console.log("fileName", fileName);
-
 			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(workspacePath + '/' + fileName));
 			const completionSource = JSON.parse(file.getText());
-			console.log('file', file)
-			console.log('completionSource', completionSource)
 
 			const text = document.lineAt(position.line).text;
 
 			const textInsideQuotes = insideQuotes(text, position);
 			if (textInsideQuotes !== null) {
-				return getTokens(completionSource, textInsideQuotes);
+				return getTokens(completionSource, textInsideQuotes, fileName);
 			} else return [];
 		},
 	};
 
-	const getTokens = (source: { [key: string]: any }, text: string): vscode.CompletionItem[] => {
-		const keys = Object.keys(source);
-		const key = keys.find(key => text.includes(key + "."));
-		// TODO handle lower case
-		// const key = keys.map(x => x.toLowerCase()).find(key => text.toLowerCase().includes(key + "."));
-		// console.log("================ BEGIN =================");
-		// console.log('source', source)
-		// console.log('text', text)
-		// console.log('key', key)
-		// console.log("================= END ==================");
-		if (key) {
-			return getTokens(source[key], text);
+	const getTokens = (source: { [key: string]: any }, text: string, fileName: string): vscode.CompletionItem[] => {
+		if (typeof source === 'string') {
+			if (text.endsWith(source + '.')) {
+				return [];
+			} else {
+				return [new vscode.CompletionItem({ label: source, description: 'Completion from ' + fileName })];
+			}
 		} else {
-			return keys.map(x => new vscode.CompletionItem(x));
+			const keys = Object.keys(source);
+			const key = keys.find(key => text.startsWith(key + "."));
+			console.log('keys', keys);
+
+			// TODO handle lower case
+			// const key = keys.map(x => x.toLowerCase()).find(key => text.toLowerCase().includes(key + "."));
+			// console.log("================ BEGIN =================");
+			// console.log('source', source)
+			// console.log('text', text)
+			// console.log('key', key)
+			// console.log("================= END ==================");
+			if (key) {
+				return getTokens(source[key], text.substring(text.indexOf('.') + 1), fileName);
+			} else if (text === '') {
+				// TODO only show description for currently selected item (see Emmet as an example)
+				return keys.map(x => new vscode.CompletionItem({ label: x, description: 'Completion from ' + fileName }));
+			} else {
+				 return [];
+			}
 		}
 	};
 
@@ -78,7 +85,7 @@ export function activate(context: vscode.ExtensionContext) {
 	];
 
 	disposable.forEach(d => context.subscriptions.push(d));
-	
+
 	// Open suggestions panel on press "."
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeTextDocument(async (event) => {
