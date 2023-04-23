@@ -1,3 +1,4 @@
 {
-    "jsonCodeCompletion.sourcePath": "example.json"
+    // "jsonCodeCompletion.sourcePath": "example.json",
+    "jsonCodeCompletion.sourcePath": "folder/folder/nestedExample.json"
 }

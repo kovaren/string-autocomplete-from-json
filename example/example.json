@@ -1,19 +1,32 @@
 {
-    "user": {
-        "name": "John",
-        "email": "john@example.com",
-        "address": {
-            "street": "123 Main St",
-            "city": "Anytown",
-            "state": "CA",
-            "zip": "12345"
+    "USER": {
+        "FIRST_NAME": "John",
+        "LAST_NAME": "Doe",
+        "EMAIL": "john@example.com",
+        "ADDRESS": {
+            "STREET": "123 Main St",
+            "CITY": "Anytown",
+            "STATE": "CA",
+            "ZIP": "12345"
         },
         "favorites": {
             "color": "blue",
             "food": "pizza",
-            "movie": "Star Wars",
+            "movie": {
+                "titles": {
+                    "starWars": {
+                        "eposide1": "Star Wars 1",
+                        "eposide2": "Star Wars 2",
+                        "eposide3": "Star Wars 3"
+                    }
+                }
+            },
             "music": {
-                "artist": "The Beatles",
+                "artists": [
+                    "The Beatles",
+                    "Led Zeppelin",
+                    "Bon Jovi"
+                ],
                 "song": "Hey Jude"
             }
         }
