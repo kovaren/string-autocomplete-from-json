@@ -2,6 +2,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { minimatch } from 'minimatch';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -34,15 +35,30 @@ export function activate(context: vscode.ExtensionContext) {
 			const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
 
 			// TODO handle relative paths
-			const fileName = conf.sourcePath;
-			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(workspacePath + '/' + fileName));
+			// document.fileName
+			// pattern
+
+			// TODO handle case when source file is outside workspace ?
+			let foundSource = null;
+			for (const { pattern, source } of conf.sourcePaths) {
+				const absolutePattern = workspacePath.replace(/\\/g, '/') + '/' + pattern;
+				if (minimatch(document.fileName, absolutePattern)) {
+					foundSource = source;
+					break;
+				}
+			}
+
+			if (!foundSource) {
+				return;
+			}
+			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(workspacePath + '/' + foundSource));
 			const completionSource = JSON.parse(file.getText());
 
 			const text = document.lineAt(position.line).text;
 
 			const textInsideQuotes = insideQuotes(text, position);
 			if (textInsideQuotes !== null) {
-				return getTokens(completionSource, textInsideQuotes, fileName);
+				return getTokens(completionSource, textInsideQuotes, foundSource);
 			} else return [];
 		},
 	};
@@ -72,7 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
 				// TODO only show description for currently selected item (see Emmet as an example)
 				return keys.map(x => new vscode.CompletionItem({ label: x, description: 'Completion from ' + fileName }));
 			} else {
-				 return [];
+				return [];
 			}
 		}
 	};

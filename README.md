@@ -1,6 +1,6 @@
-# i18n-code-completion README
+# json-code-completion
 
-This is the README for your extension "i18n-code-completion". After writing up a brief description, we recommend including the following sections.
+Simple extenstion that provides code completion based on JSON files.
 
 ## Features
 
@@ -14,7 +14,7 @@ For example if there is an image subfolder under your extension project workspac
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+minimatch
 
 ## Extension Settings
 
