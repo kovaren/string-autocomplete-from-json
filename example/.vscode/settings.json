@@ -1,9 +1,9 @@
 {
-    "jsonCodeCompletion.sourcePaths": [{
-        "source": "./example.json",
-        "pattern": "./*"
+    "jsonCodeCompletion.config": [{
+        "sourcePath": "./example.json",
+        "destinationPattern": "./*"
     }, {
-        "source": "folder1/folder2/nestedExample.json",
-        "pattern": "folder3/**"
+        "sourcePath": "folder1/folder2/nestedExample.json",
+        "destinationPattern": "folder3/**"
     }]
 }

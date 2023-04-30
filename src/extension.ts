@@ -20,6 +20,10 @@ export function activate(context: vscode.ExtensionContext) {
 		} else return null;
 	};
 
+	const isPathAbsolute = (path: string) => {
+		return path.startsWith('/') || /^[A-Za-z]:[\\/]/.test(path);
+	};
+
 	let _provideCompletionItems = {
 		async provideCompletionItems(
 			document: vscode.TextDocument,
@@ -28,35 +32,42 @@ export function activate(context: vscode.ExtensionContext) {
 			context: vscode.CompletionContext
 		) {
 
-			let conf = vscode.workspace.getConfiguration('jsonCodeCompletion');
+			let { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
 
 			// vscode.window.showInformationMessage(conf.get('paths')!);
 
 			const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
 
 			// TODO add comprehensive description in package.json for pattern, source, it will show up in settings.json
-			// TODO handle case when source file is outside workspace ?
 
 			// TODO
 			// Ctrl+mouseover show preview of object and Ctrl+click => jump to source like in CreateTenantEndpoint
 			// why Constant is intellisensed in CreateTenantEndpoint but not CommonConstant is not?
 			// make this extension work with exported JS object like in CommonConstant ? maybe works already
+
+			// TODO
+			// handle supported file extensions in config ?
+
+			// TODO
+			// support all files ? (json, jsx, tsx, etc)
+
 			let foundSource = null;
-			for (const { pattern, source } of conf.sourcePaths) {
+			for (const { destinationPattern, sourcePath } of config) {
 				let relativeFileName = document.fileName.replace(workspacePath + '\\', '').replace(/\\/g, '/');
-				if (pattern.startsWith('./')) {
+				if (destinationPattern.startsWith('./')) {
 					relativeFileName = './' + relativeFileName;
 				}
-				if (minimatch(relativeFileName, pattern, { dot: true })) {
-					foundSource = source;
+				if (minimatch(relativeFileName, destinationPattern, { dot: true })) {
+					foundSource = sourcePath;
 					break;
 				}
 			}
-
 			if (!foundSource) {
 				return;
 			}
-			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(workspacePath + '/' + foundSource));
+
+			const source = isPathAbsolute(foundSource) ? foundSource : workspacePath + '/' + foundSource;
+			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(source));
 			const completionSource = JSON.parse(file.getText());
 
 			const text = document.lineAt(position.line).text;

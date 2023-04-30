@@ -26,23 +26,23 @@
     "configuration": {
       "title": "JSON Code completion",
       "properties": {
-        "jsonCodeCompletion.sourcePaths": {
+        "jsonCodeCompletion.config": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "source": {
+              "sourcePath": {
                 "type": "string",
-                "description": "JSON source file"
+                "description": "Path of the source JSON file. It can be either absolute or relative to workspace root directory."
               },
-              "pattern": {
+              "destinationPattern": {
                 "type": "string",
-                "description": "Glob pattern"
+                "description": "Glob pattern of files to provide the code completion in (only .ts, .js and .html are supported)."
               }
             }
           },
           "default": "",
-          "description": "Source path"
+          "description": "Configuration of source files and destination files for code completion."
         }
       }
     }
