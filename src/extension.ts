@@ -34,15 +34,20 @@ export function activate(context: vscode.ExtensionContext) {
 
 			const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
 
-			// TODO handle relative paths
-			// document.fileName
-			// pattern
-
+			// TODO add comprehensive description in package.json for pattern, source, it will show up in settings.json
 			// TODO handle case when source file is outside workspace ?
+
+			// TODO
+			// Ctrl+mouseover show preview of object and Ctrl+click => jump to source like in CreateTenantEndpoint
+			// why Constant is intellisensed in CreateTenantEndpoint but not CommonConstant is not?
+			// make this extension work with exported JS object like in CommonConstant ? maybe works already
 			let foundSource = null;
 			for (const { pattern, source } of conf.sourcePaths) {
-				const absolutePattern = workspacePath.replace(/\\/g, '/') + '/' + pattern;
-				if (minimatch(document.fileName, absolutePattern)) {
+				let relativeFileName = document.fileName.replace(workspacePath + '\\', '').replace(/\\/g, '/');
+				if (pattern.startsWith('./')) {
+					relativeFileName = './' + relativeFileName;
+				}
+				if (minimatch(relativeFileName, pattern, { dot: true })) {
 					foundSource = source;
 					break;
 				}
@@ -73,7 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
 		} else {
 			const keys = Object.keys(source);
 			const key = keys.find(key => text.startsWith(key + "."));
-			console.log('keys', keys);
+			// console.log('keys', keys);
 
 			// TODO handle lower case
 			// const key = keys.map(x => x.toLowerCase()).find(key => text.toLowerCase().includes(key + "."));
