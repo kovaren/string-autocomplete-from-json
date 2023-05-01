@@ -45,11 +45,8 @@ export function activate(context: vscode.ExtensionContext) {
 			// why Constant is intellisensed in CreateTenantEndpoint but not CommonConstant is not?
 			// make this extension work with exported JS object like in CommonConstant ? maybe works already
 
-			// TODO
-			// handle supported file extensions in config ?
-
-			// TODO
-			// support all files ? (json, jsx, tsx, etc)
+			// FIXME
+			// completion inside json file not working
 
 			let foundSource = null;
 			for (const { destinationPattern, sourcePath } of config) {
@@ -66,7 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 
-			const source = isPathAbsolute(foundSource) ? foundSource : workspacePath + '/' + foundSource;
+			const source = isPathAbsolute(foundSource) ? foundSource : workspacePath.replace(/\\/g, '/') + '/' + foundSource;
+
 			const file = await vscode.workspace.openTextDocument(vscode.Uri.file(source));
 			const completionSource = JSON.parse(file.getText());
 
@@ -110,11 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
 	};
 
 	// let disp = vscode.languages.registerCompletionItemProvider(selector: DocumentSelector, provider: CompletionItemProvider<CompletionItem>, ...triggerCharacters: string[])
-	const disposable = [
-		vscode.languages.registerCompletionItemProvider("html", _provideCompletionItems),
-		vscode.languages.registerCompletionItemProvider("javascript", _provideCompletionItems),
-		vscode.languages.registerCompletionItemProvider("typescript", _provideCompletionItems)
-	];
+	const disposable = [vscode.languages.registerCompletionItemProvider("*", _provideCompletionItems)];
 
 	disposable.forEach(d => context.subscriptions.push(d));
 
