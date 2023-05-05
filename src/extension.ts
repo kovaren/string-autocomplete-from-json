@@ -3,6 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { minimatch } from 'minimatch';
+import { CompletionItemKind } from 'vscode';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -47,6 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 			// FIXME
 			// completion inside json file not working
+
+			// TODO
+			// rename to autocomplete ?
+
+			// TODO
+			// handle ctrl+space in the middle of the string, currently only works at the end or 
 
 			let foundSource = null;
 			for (const { destinationPattern, sourcePath } of config) {
@@ -100,7 +107,13 @@ export function activate(context: vscode.ExtensionContext) {
 				return getTokens(source[key], text.substring(text.indexOf('.') + 1), fileName);
 			} else if (text === '') {
 				// TODO only show description for currently selected item (see Emmet as an example)
-				return keys.map(x => new vscode.CompletionItem({ label: x, description: 'Completion from ' + fileName }));
+				return keys.map(key => {
+					const item = new vscode.CompletionItem({ label: ' ' + key, description: 'Completed from ' + fileName });
+					item.insertText = key;
+					item.commitCharacters = ['.'];
+					item.kind = CompletionItemKind.Constant;
+					return item;
+				});
 			} else {
 				return [];
 			}
@@ -108,7 +121,7 @@ export function activate(context: vscode.ExtensionContext) {
 	};
 
 	// let disp = vscode.languages.registerCompletionItemProvider(selector: DocumentSelector, provider: CompletionItemProvider<CompletionItem>, ...triggerCharacters: string[])
-	const disposable = [vscode.languages.registerCompletionItemProvider("*", _provideCompletionItems)];
+	const disposable = [vscode.languages.registerCompletionItemProvider("*", _provideCompletionItems)]; // TODO takes trigger characters
 
 	disposable.forEach(d => context.subscriptions.push(d));
 
