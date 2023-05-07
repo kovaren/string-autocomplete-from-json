@@ -9,14 +9,23 @@ import { CompletionItemKind } from 'vscode';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Get text between single quotes
 	// TODO handle double quotes
+	/**
+	 * Get text between the opening quote and the cursor inside a quoted piece of text 
+	 * 
+	 * @param text 
+	 * @param position cursor position 
+	 * @returns
+	 * 	
+	 * input: "The quick brown 'fox jumps over' the lazy dog", position just after "s" in "jumps"
+	 * 
+	 * output: fox jumps
+	 */
 	const insideQuotes = (text: string, position: vscode.Position) => {
 		const left = text.substring(0, position.character);
 		const right = text.substring(position.character, text.length);
 		if (left.includes("'") && right.includes("'")) {
 			const l = left.split("'");
-			const r = right.split("'");
 			return l[l.length - 1];
 		} else return null;
 	};
@@ -76,44 +85,39 @@ export function activate(context: vscode.ExtensionContext) {
 
 			const textInsideQuotes = insideQuotes(text, position);
 			if (textInsideQuotes !== null) {
-				return getItems(completionSource, textInsideQuotes, foundSource);
+				return getItems(completionSource, '', textInsideQuotes, foundSource);
 			} else return [];
 		},
 	};
 
-	const createItem = (key: string, sourceFileName: string) => {
-		const item = new vscode.CompletionItem({ label: key, description: 'Completed from ' + sourceFileName });
+	const createItem = (key: string, sourceFileName: string, kind: CompletionItemKind) => {
+		const item = new vscode.CompletionItem({ label: key, description: sourceFileName });
 		item.insertText = key;
 		item.sortText = ' ' + key;
 		item.commitCharacters = ['.'];
-		item.kind = CompletionItemKind.EnumMember;
+		item.kind = kind;
 		return item;
 	};
 
-	const getItems = (source: { [key: string]: any }, text: string, fileName: string): vscode.CompletionItem[] => {
-		if (typeof source === 'string') {
-			if (text.endsWith(source + '.')) {
-				return [];
+	const isPrimitiveType = (value: unknown) => value === null || typeof value !== 'object';
+
+	const getItems = (source: { [key: string]: any } | string, currentKey: string, text: string, fileName: string): vscode.CompletionItem[] => {
+		if (isPrimitiveType(source)) {
+			if (text.endsWith(currentKey + '.')) {
+				return [createItem(source + '', fileName, CompletionItemKind.Constant)];
 			} else {
-				return [createItem(source, fileName)];
+				return [];
 			}
 		} else {
 			const keys = Object.keys(source);
-			const key = keys.find(key => text.startsWith(key + "."));
-			// console.log('keys', keys);
-
-			// TODO handle lower case
-			// const key = keys.map(x => x.toLowerCase()).find(key => text.toLowerCase().includes(key + "."));
-			// console.log("================ BEGIN =================");
-			// console.log('source', source)
-			// console.log('text', text)
-			// console.log('key', key)
-			// console.log("================= END ==================");
+			const prefix = currentKey ? currentKey + '.' : '';
+			const key = keys.find(key => text.startsWith(prefix + key + "."));
 			if (key) {
-				return getItems(source[key], text.substring(text.indexOf('.') + 1), fileName);
-			} else if (text === '') {
+				// FIXME remove any
+				return getItems((source as any)[key], prefix + key, text, fileName);
+			} else if (text === prefix) {
 				// TODO only show description for currently selected item (see Emmet as an example)
-				return keys.map(key => createItem(key, fileName));
+				return keys.map(key => createItem(key, fileName, CompletionItemKind.EnumMember));
 			} else {
 				return [];
 			}
@@ -130,7 +134,6 @@ export function activate(context: vscode.ExtensionContext) {
 				const text = event.document.lineAt(position.line).text;
 				const textInsideQuotes = insideQuotes(text, position!);
 				if (!textInsideQuotes?.endsWith('.')) {
-					// TODO handle "." that is not at the end of the text?
 					return;
 				}
 			}

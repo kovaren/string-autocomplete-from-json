@@ -8,6 +8,9 @@
             "CITY": "Anytown",
             "STATE": "CA",
             "ZIP": "12345"
-        }
+        },
+        "SUPER_MEGA_LONG_NAME_ATTRIBUTE_12345678901232456789352398476928734623982345": 123,
+        "SUPER_MEGA_LONG_NAME_ATTRIBUTE_BOOLEAN": true,
+        "SUPER_MEGA_LONG_NAME_ATTRIBUTE_NULL": null
     }
 }
