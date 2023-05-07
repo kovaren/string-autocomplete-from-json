@@ -1,5 +1,8 @@
 {
     "jsonCodeCompletion.config": [{
+        "sourcePath": "folder3/folder4/superLongNameFolder1/superLongNameFolder2/superLongNameFolder3/superLongNameFolder4/superLongNameFolder5/superNestedExample.json",
+        "destinationPattern": "folder3/folder4/superLongNameFolder1/**"
+    }, {
         "sourcePath": "./example.json",
         "destinationPattern": "./*.{tsx,ts,js,html}"
     }, {

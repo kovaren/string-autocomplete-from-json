@@ -76,17 +76,26 @@ export function activate(context: vscode.ExtensionContext) {
 
 			const textInsideQuotes = insideQuotes(text, position);
 			if (textInsideQuotes !== null) {
-				return getTokens(completionSource, textInsideQuotes, foundSource);
+				return getItems(completionSource, textInsideQuotes, foundSource);
 			} else return [];
 		},
 	};
 
-	const getTokens = (source: { [key: string]: any }, text: string, fileName: string): vscode.CompletionItem[] => {
+	const createItem = (key: string, sourceFileName: string) => {
+		const item = new vscode.CompletionItem({ label: key, description: 'Completed from ' + sourceFileName });
+		item.insertText = key;
+		item.sortText = ' ' + key;
+		item.commitCharacters = ['.'];
+		item.kind = CompletionItemKind.EnumMember;
+		return item;
+	};
+
+	const getItems = (source: { [key: string]: any }, text: string, fileName: string): vscode.CompletionItem[] => {
 		if (typeof source === 'string') {
 			if (text.endsWith(source + '.')) {
 				return [];
 			} else {
-				return [new vscode.CompletionItem({ label: source, description: 'Completion from ' + fileName })];
+				return [createItem(source, fileName)];
 			}
 		} else {
 			const keys = Object.keys(source);
@@ -101,17 +110,10 @@ export function activate(context: vscode.ExtensionContext) {
 			// console.log('key', key)
 			// console.log("================= END ==================");
 			if (key) {
-				return getTokens(source[key], text.substring(text.indexOf('.') + 1), fileName);
+				return getItems(source[key], text.substring(text.indexOf('.') + 1), fileName);
 			} else if (text === '') {
 				// TODO only show description for currently selected item (see Emmet as an example)
-				return keys.map(key => {
-					const item = new vscode.CompletionItem({ label: key, description: 'Completed from ' + fileName });
-					item.insertText = key;
-					item.sortText = ' ' + key;
-					item.commitCharacters = ['.'];
-					item.kind = CompletionItemKind.Constant;
-					return item;
-				});
+				return keys.map(key => createItem(key, fileName));
 			} else {
 				return [];
 			}

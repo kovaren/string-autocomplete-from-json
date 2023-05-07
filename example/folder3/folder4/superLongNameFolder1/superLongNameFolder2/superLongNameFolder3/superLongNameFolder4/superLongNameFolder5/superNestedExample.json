@@ -1,0 +1,13 @@
+{
+    "SUPER_NESTED_USER": {
+        "FIRST_NAME": "John",
+        "LAST_NAME": "Doe",
+        "EMAIL": "john@example.com",
+        "ADDRESS": {
+            "STREET": "123 Main St",
+            "CITY": "Anytown",
+            "STATE": "CA",
+            "ZIP": "12345"
+        }
+    }
+}
