@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (left.includes("'") && right.includes("'")) {
 			const l = left.split("'");
 			const r = right.split("'");
-			return l[l.length - 1] + r[0];
+			return l[l.length - 1];
 		} else return null;
 	};
 
@@ -51,9 +51,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 			// TODO
 			// rename to autocomplete ?
-
-			// TODO
-			// handle ctrl+space in the middle of the string, currently only works at the end or 
 
 			let foundSource = null;
 			for (const { destinationPattern, sourcePath } of config) {
@@ -108,8 +105,9 @@ export function activate(context: vscode.ExtensionContext) {
 			} else if (text === '') {
 				// TODO only show description for currently selected item (see Emmet as an example)
 				return keys.map(key => {
-					const item = new vscode.CompletionItem({ label: ' ' + key, description: 'Completed from ' + fileName });
+					const item = new vscode.CompletionItem({ label: key, description: 'Completed from ' + fileName });
 					item.insertText = key;
+					item.sortText = ' ' + key;
 					item.commitCharacters = ['.'];
 					item.kind = CompletionItemKind.Constant;
 					return item;
@@ -120,10 +118,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	};
 
-	// let disp = vscode.languages.registerCompletionItemProvider(selector: DocumentSelector, provider: CompletionItemProvider<CompletionItem>, ...triggerCharacters: string[])
-	const disposable = [vscode.languages.registerCompletionItemProvider("*", _provideCompletionItems)]; // TODO takes trigger characters
-
-	disposable.forEach(d => context.subscriptions.push(d));
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider("*", _provideCompletionItems, '.'));
 
 	// Open suggestions panel on press "."
 	context.subscriptions.push(

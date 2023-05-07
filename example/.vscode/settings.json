@@ -5,5 +5,10 @@
     }, {
         "sourcePath": "folder1/folder2/nestedExample.json",
         "destinationPattern": "folder3/**/*.{html,jsx}"
-    }]
+    }
+],
+"emmet.excludeLanguages": [
+    "markdown",
+],
+"emmet.preferences": {},
 }

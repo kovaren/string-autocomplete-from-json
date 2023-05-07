@@ -3,7 +3,13 @@
         "FIRST_NAME": "John",
         "LAST_NAME": "Doe",
         "EMAIL": "john@example.com",
-        "ADDRESS": {
+        "ADDRESS1": {
+            "STREET": "123 Main St",
+            "CITY": "Anytown",
+            "STATE": "CA",
+            "ZIP": "12345"
+        },
+        "ADDRESS2": {
             "STREET": "123 Main St",
             "CITY": "Anytown",
             "STATE": "CA",
