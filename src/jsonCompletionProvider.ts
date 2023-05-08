@@ -1,6 +1,6 @@
 import { minimatch } from 'minimatch';
 import * as vscode from 'vscode';
-import { insideQuotes, isPathAbsolute } from './utils';
+import { findCompletionSource, betweenQuotes, isPathAbsolute } from './utils';
 import { CompletionItemKind } from 'vscode';
 
 export default class JsonCompletionProvider implements vscode.CompletionItemProvider {
@@ -10,16 +10,7 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ) {
-        let { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
-
-        const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
-
         // TODO add comprehensive description in package.json for pattern, source, it will show up in settings.json
-
-        // TODO
-        // Ctrl+mouseover show preview of object and Ctrl+click => jump to source like in CreateTenantEndpoint
-        // why Constant is intellisensed in CreateTenantEndpoint but not CommonConstant is not?
-        // make this extension work with exported JS object like in CommonConstant ? maybe works already
 
         // FIXME
         // completion inside json file not working
@@ -27,31 +18,20 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
         // TODO
         // rename to autocomplete ?
 
-        let foundSource = null;
-        for (const { destinationPattern, sourcePath } of config) {
-            let relativeFileName = document.fileName.replace(workspacePath + '\\', '').replace(/\\/g, '/');
-            if (destinationPattern.startsWith('./')) {
-                relativeFileName = './' + relativeFileName;
-            }
-            if (minimatch(relativeFileName, destinationPattern, { dot: true })) {
-                foundSource = sourcePath;
-                break;
-            }
-        }
-        if (!foundSource) {
-            return;
-        }
+        // TODO
+        // find usages (only within files in destination pattern, shouldn't be hard to implement)
 
-        const source = isPathAbsolute(foundSource) ? foundSource : workspacePath.replace(/\\/g, '/') + '/' + foundSource;
-
-        const file = await vscode.workspace.openTextDocument(vscode.Uri.file(source));
+        const source = findCompletionSource(document);
+        if (!source) {
+            return null;
+        }
+        const file = await vscode.workspace.openTextDocument(vscode.Uri.file(source.localPath));
         const completionSource = JSON.parse(file.getText());
-
         const text = document.lineAt(position.line).text;
 
-        const textInsideQuotes = insideQuotes(text, position);
-        if (textInsideQuotes !== null) {
-            return this.getItems(completionSource, '', textInsideQuotes, foundSource);
+        const textBetweenQuotes = betweenQuotes(text, position);
+        if (textBetweenQuotes !== null) {
+            return this.getItems(completionSource, '', textBetweenQuotes, source.originalPath);
         } else {
             return [];
         }

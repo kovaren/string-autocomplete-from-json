@@ -10,10 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:i18n-code-completion.helloWorld",
-    "onLanguage:html",
-    "onLanguage:javascript",
-    "onLanguage:typescript"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -56,6 +53,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
+    "json-source-map": "^0.6.1",
     "minimatch": "^9.0.0"
   },
   "devDependencies": {

@@ -3,12 +3,14 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import JsonCompletionProvider from './jsonCompletionProvider';
-import { insideQuotes } from './utils';
+import { betweenQuotes } from './utils';
+import JsonDefinitionProvider from './jsonDefinitionProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
+	context.subscriptions.push(vscode.languages.registerDefinitionProvider('*', new JsonDefinitionProvider()));
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider("*", new JsonCompletionProvider(), '.'));
 
 	// Open suggestions panel on press "."
@@ -17,8 +19,8 @@ export function activate(context: vscode.ExtensionContext) {
 			const position = vscode.window.activeTextEditor?.selection.active;
 			if (position) {
 				const text = event.document.lineAt(position.line).text;
-				const textInsideQuotes = insideQuotes(text, position!);
-				if (!textInsideQuotes?.endsWith('.')) {
+				const textBetweenQuotes = betweenQuotes(text, position!);
+				if (!textBetweenQuotes?.endsWith('.')) {
 					return;
 				}
 			}
