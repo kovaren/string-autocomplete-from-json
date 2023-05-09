@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import JsonCompletionProvider from './jsonCompletionProvider';
 import { betweenQuotes } from './utils';
 import JsonDefinitionProvider from './jsonDefinitionProvider';
+import JsonReferenceProvider from './jsonReferenceProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -12,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider('*', new JsonDefinitionProvider()));
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider("*", new JsonCompletionProvider(), '.'));
+    context.subscriptions.push(vscode.languages.registerReferenceProvider('*', new JsonReferenceProvider()));
 
 	// Open suggestions panel on press "."
 	context.subscriptions.push(

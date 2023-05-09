@@ -1,5 +1,6 @@
 import { minimatch } from 'minimatch';
 import * as vscode from 'vscode';
+import path = require('path');
 
 // TODO handle double quotes
 /**
@@ -53,6 +54,33 @@ export const findCompletionSource = (document: vscode.TextDocument): { localPath
     if (originalPath) {
         const localPath = isPathAbsolute(originalPath) ? originalPath : workspacePath.replace(/\\/g, '/') + '/' + originalPath;
         return { originalPath, localPath };
+    } else {
+        return null;
+    }
+};
+
+export const findDestinationPattern = async (document: vscode.TextDocument): Promise<{ destinationPattern: string } | null> => {
+    const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
+    const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
+    
+    let foundDestinationPattern = null;
+    for (const { sourcePath, destinationPattern } of config) {
+        const localPath = isPathAbsolute(sourcePath) ? sourcePath : workspacePath.replace(/\\/g, '/') + '/' + sourcePath;
+
+        // TODO handle multiple patterns with the same source
+        const resolvedPath = path.resolve(localPath).replace(/\\/g, '/');
+        if (resolvedPath === document.uri.fsPath.replace(/\\/g, '/')) {
+            if (destinationPattern.startsWith('./')) {
+                foundDestinationPattern = destinationPattern.substring(2);
+            } else {
+                foundDestinationPattern = destinationPattern;
+            }
+            console.log('destinationPattern', destinationPattern)
+            break;
+        }
+    }
+    if (foundDestinationPattern) {
+        return { destinationPattern: foundDestinationPattern };
     } else {
         return null;
     }

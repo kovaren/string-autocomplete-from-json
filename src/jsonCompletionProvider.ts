@@ -19,6 +19,9 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
         // rename to autocomplete ?
 
         // TODO
+        // handle case when attributes in source json contain "." like in (.vscode/settings.json)
+
+        // TODO
         // find usages (only within files in destination pattern, shouldn't be hard to implement)
 
         const source = findCompletionSource(document);
@@ -28,7 +31,7 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
         const file = await vscode.workspace.openTextDocument(vscode.Uri.file(source.localPath));
         const completionSource = JSON.parse(file.getText());
         const text = document.lineAt(position.line).text;
-
+        
         const textBetweenQuotes = betweenQuotes(text, position);
         if (textBetweenQuotes !== null) {
             return this.getItems(completionSource, '', textBetweenQuotes, source.originalPath);
