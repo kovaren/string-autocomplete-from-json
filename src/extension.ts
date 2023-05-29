@@ -11,9 +11,15 @@ import JsonReferenceProvider from './jsonReferenceProvider';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	context.subscriptions.push(vscode.languages.registerDefinitionProvider('*', new JsonDefinitionProvider()));
+	
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider("*", new JsonCompletionProvider(), '.'));
-    context.subscriptions.push(vscode.languages.registerReferenceProvider('*', new JsonReferenceProvider()));
+	context.subscriptions.push(vscode.languages.registerDefinitionProvider('*', new JsonDefinitionProvider()));
+
+	// { language: 'json', pattern: '**​/package.json' }
+    context.subscriptions.push(vscode.languages.registerReferenceProvider('json', new JsonReferenceProvider()));
+
+	// TODO
+	// vscode.languages.registerRenameProvider
 
 	// Open suggestions panel on press "."
 	context.subscriptions.push(

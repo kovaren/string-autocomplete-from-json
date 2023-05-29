@@ -10,20 +10,6 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ) {
-        // TODO add comprehensive description in package.json for pattern, source, it will show up in settings.json
-
-        // FIXME
-        // completion inside json file not working
-
-        // TODO
-        // rename to autocomplete ?
-
-        // TODO
-        // handle case when attributes in source json contain "." like in (.vscode/settings.json)
-
-        // TODO
-        // find usages (only within files in destination pattern, shouldn't be hard to implement)
-
         const source = findCompletionSource(document);
         if (!source) {
             return null;
