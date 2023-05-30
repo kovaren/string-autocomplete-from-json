@@ -1,6 +1,6 @@
 import { minimatch } from 'minimatch';
 import * as vscode from 'vscode';
-import { findCompletionSource, betweenQuotes, isPathAbsolute } from './utils';
+import { findCompletionSource, extractTextInQuotes, isPathAbsolute } from './utils';
 import { CompletionItemKind } from 'vscode';
 
 export default class JsonCompletionProvider implements vscode.CompletionItemProvider {
@@ -18,9 +18,9 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
         const completionSource = JSON.parse(file.getText());
         const text = document.lineAt(position.line).text;
         
-        const textBetweenQuotes = betweenQuotes(text, position);
-        if (textBetweenQuotes !== null) {
-            return this.getItems(completionSource, '', textBetweenQuotes, source.originalPath);
+        const textInQuotes = extractTextInQuotes(text, position);
+        if (textInQuotes !== null) {
+            return this.getItems(completionSource, '', textInQuotes, source.originalPath);
         } else {
             return [];
         }

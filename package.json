@@ -53,9 +53,9 @@
     "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
+    "glob": "10.2.2",
     "json-source-map": "^0.6.1",
-    "minimatch": "^9.0.0",
-    "glob": "10.2.2"
+    "minimatch": "^9.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.0",

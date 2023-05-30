@@ -15,18 +15,51 @@ import path = require('path');
  * 
  * output: fox jumps
  */
-export const betweenQuotes = (text: string, position: vscode.Position, wholeWord = false) => {
+export const extractTextInQuotes = (text: string, position: vscode.Position, wholeWord = false) => {
     const left = text.substring(0, position.character);
     const right = text.substring(position.character, text.length);
-    if (left.includes("'") && right.includes("'")) {
-        const leftHalf = left.split("'");
+    const extractText = (leftIndex: number, rightIndex: number) => {
         if (wholeWord) {
-            const rightHalf = right.split("'");
-            const words = rightHalf[0].split('.');
-            return leftHalf[leftHalf.length - 1] + words[0];
+            const words = right.substring(0, rightIndex).split('.');
+            return left.substring(leftIndex + 1) + words[0];
         } else {
-            return leftHalf[leftHalf.length - 1];
+            return left.substring(leftIndex + 1);
         }
+    };
+
+    const bothIncludeSingle = left.includes("'") && right.includes("'");
+    const bothIncludeDouble = left.includes('"') && right.includes('"');
+    if (bothIncludeSingle) {
+        if (bothIncludeDouble) {
+            const leftIndexSingle = left.lastIndexOf("'");
+            const leftIndexDouble = left.lastIndexOf('"');
+            const rightIndexSingle = right.indexOf("'");
+            const rightIndexDouble = right.indexOf('"');
+            const leftSingle = leftIndexSingle > leftIndexDouble;
+            const rightDouble = rightIndexSingle < rightIndexDouble;
+            let leftIndex, rightIndex;
+            if (leftSingle && rightDouble) {
+                // single quotes are innermost
+                leftIndex = leftIndexSingle;
+                rightIndex = rightIndexSingle;
+            } else if (!leftSingle && !rightDouble) {
+                // double quotes are innermost
+                leftIndex = leftIndexDouble;
+                rightIndex = rightIndexDouble;
+            } else {
+                // single and double quotes overlap
+                return null;
+            }
+            return extractText(leftIndex, rightIndex);
+        } else {
+            const leftIndex = left.lastIndexOf("'");
+            const rightIndex = right.indexOf("'");
+            return extractText(leftIndex, rightIndex);
+        }
+    } else if (bothIncludeDouble) {
+        const leftIndex = left.lastIndexOf('"');
+        const rightIndex = right.indexOf('"');
+        return extractText(leftIndex, rightIndex);
     } else {
         return null;
     }
@@ -62,7 +95,7 @@ export const findCompletionSource = (document: vscode.TextDocument): { localPath
 export const findDestinationPattern = async (document: vscode.TextDocument): Promise<{ destinationPattern: string } | null> => {
     const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
     const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
-    
+
     let foundDestinationPattern = null;
     for (const { sourcePath, destinationPattern } of config) {
         const localPath = isPathAbsolute(sourcePath) ? sourcePath : workspacePath.replace(/\\/g, '/') + '/' + sourcePath;
@@ -75,7 +108,7 @@ export const findDestinationPattern = async (document: vscode.TextDocument): Pro
             } else {
                 foundDestinationPattern = destinationPattern;
             }
-            console.log('destinationPattern', destinationPattern)
+            console.log('destinationPattern', destinationPattern);
             break;
         }
     }

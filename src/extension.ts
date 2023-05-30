@@ -3,7 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import JsonCompletionProvider from './jsonCompletionProvider';
-import { betweenQuotes } from './utils';
+import { extractTextInQuotes } from './utils';
 import JsonDefinitionProvider from './jsonDefinitionProvider';
 import JsonReferenceProvider from './jsonReferenceProvider';
 
@@ -27,8 +27,8 @@ export function activate(context: vscode.ExtensionContext) {
 			const position = vscode.window.activeTextEditor?.selection.active;
 			if (position) {
 				const text = event.document.lineAt(position.line).text;
-				const textBetweenQuotes = betweenQuotes(text, position!);
-				if (!textBetweenQuotes?.endsWith('.')) {
+				const textInQuotes = extractTextInQuotes(text, position!);
+				if (!textInQuotes?.endsWith('.')) {
 					return;
 				}
 			}

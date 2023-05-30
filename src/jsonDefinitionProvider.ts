@@ -1,6 +1,6 @@
 import { minimatch } from 'minimatch';
 import * as vscode from 'vscode';
-import { findCompletionSource, betweenQuotes, isPathAbsolute } from './utils';
+import { findCompletionSource, extractTextInQuotes, isPathAbsolute } from './utils';
 const jsonMap = require('json-source-map');
 
 export default class JsonDefinitionProvider implements vscode.DefinitionProvider {
@@ -20,8 +20,8 @@ export default class JsonDefinitionProvider implements vscode.DefinitionProvider
         const file = await vscode.workspace.openTextDocument(vscode.Uri.file(source.localPath));
         const mapping = jsonMap.parse(file.getText());
         const text = document.lineAt(position.line).text;
-        const textBetweenQuotes = betweenQuotes(text, position, true);
-        const withSlashes = '/' + textBetweenQuotes?.replace(/\./g, '/');
+        const textInQuotes = extractTextInQuotes(text, position, true);
+        const withSlashes = '/' + textInQuotes?.replace(/\./g, '/');
 
         const { key } = mapping.pointers[withSlashes];
         return key ? new vscode.Location(vscode.Uri.file(source.localPath), new vscode.Position(key.line, key.column)) : null;
