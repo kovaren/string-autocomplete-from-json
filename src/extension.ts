@@ -6,20 +6,22 @@ import JsonCompletionProvider from './jsonCompletionProvider';
 import { extractTextInQuotes } from './utils';
 import JsonDefinitionProvider from './jsonDefinitionProvider';
 import JsonReferenceProvider from './jsonReferenceProvider';
+import JsonRenameProvider from './jsonRenameProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	
+	// TODO finish rename provider, test in a big repo
+	// TODO suggestions when a part of a word is already written like "USER.ADDRE"
+	// TODO put cursor at the end of the word but before the " on F12
+
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider("*", new JsonCompletionProvider(), '.'));
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider('*', new JsonDefinitionProvider()));
 
 	// { language: 'json', pattern: '**​/package.json' }
-    context.subscriptions.push(vscode.languages.registerReferenceProvider('json', new JsonReferenceProvider()));
-
-	// TODO
-	// vscode.languages.registerRenameProvider
+	context.subscriptions.push(vscode.languages.registerReferenceProvider('json', new JsonReferenceProvider()));
+	context.subscriptions.push(vscode.languages.registerRenameProvider('*', new JsonRenameProvider()));
 
 	// Open suggestions panel on press "."
 	context.subscriptions.push(

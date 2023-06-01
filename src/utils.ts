@@ -2,7 +2,6 @@ import { minimatch } from 'minimatch';
 import * as vscode from 'vscode';
 import path = require('path');
 
-// TODO handle double quotes
 /**
  * Get text between the opening quote and the cursor inside a quoted piece of text 
  * 
