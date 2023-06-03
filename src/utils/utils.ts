@@ -68,13 +68,15 @@ export const isPathAbsolute = (path: string) => {
     return path.startsWith('/') || /^[A-Za-z]:[\\/]/.test(path);
 };
 
+const convertSlashes = (path: string) => path.replace(/\\/g, '/');
+
 export const findCompletionSource = (document: vscode.TextDocument): { localPath: string, originalPath: string } | null => {
     const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
     const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
 
     let originalPath = null;
     for (const { destinationPattern, sourcePath } of config) {
-        let relativeFileName = document.fileName.replace(workspacePath + '\\', '').replace(/\\/g, '/');
+        let relativeFileName = convertSlashes(document.fileName).replace(convertSlashes(workspacePath) + '/', '');
         if (destinationPattern.startsWith('./')) {
             relativeFileName = './' + relativeFileName;
         }
@@ -84,7 +86,7 @@ export const findCompletionSource = (document: vscode.TextDocument): { localPath
         }
     }
     if (originalPath) {
-        const localPath = isPathAbsolute(originalPath) ? originalPath : workspacePath.replace(/\\/g, '/') + '/' + originalPath;
+        const localPath = isPathAbsolute(originalPath) ? originalPath : convertSlashes(workspacePath) + '/' + originalPath;
         return { originalPath, localPath };
     } else {
         return null;
@@ -97,17 +99,16 @@ export const findDestinationPattern = async (document: vscode.TextDocument): Pro
 
     let foundDestinationPattern = null;
     for (const { sourcePath, destinationPattern } of config) {
-        const localPath = isPathAbsolute(sourcePath) ? sourcePath : workspacePath.replace(/\\/g, '/') + '/' + sourcePath;
+        const localPath = isPathAbsolute(sourcePath) ? sourcePath : convertSlashes(workspacePath) + '/' + sourcePath;
 
         // TODO handle multiple patterns with the same source
-        const resolvedPath = path.resolve(localPath).replace(/\\/g, '/');
-        if (resolvedPath === document.uri.fsPath.replace(/\\/g, '/')) {
+        const resolvedPath = convertSlashes(path.resolve(localPath));
+        if (resolvedPath === convertSlashes(document.uri.fsPath)) {
             if (destinationPattern.startsWith('./')) {
                 foundDestinationPattern = destinationPattern.substring(2);
             } else {
                 foundDestinationPattern = destinationPattern;
             }
-            console.log('destinationPattern', destinationPattern);
             break;
         }
     }
