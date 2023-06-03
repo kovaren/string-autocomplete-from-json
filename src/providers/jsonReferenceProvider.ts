@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { findDestinationPattern } from './utils';
+import { findDestinationPattern } from '../utils/utils';
 const jsonMap = require('json-source-map');
 
 export default class JsonReferenceProvider implements vscode.ReferenceProvider {

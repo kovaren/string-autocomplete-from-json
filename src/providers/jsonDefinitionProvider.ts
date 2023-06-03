@@ -1,6 +1,6 @@
 import { minimatch } from 'minimatch';
 import * as vscode from 'vscode';
-import { findCompletionSource, extractTextInQuotes, isPathAbsolute } from './utils';
+import { findCompletionSource, extractTextInQuotes, isPathAbsolute } from '../utils/utils';
 const jsonMap = require('json-source-map');
 
 export default class JsonDefinitionProvider implements vscode.DefinitionProvider {

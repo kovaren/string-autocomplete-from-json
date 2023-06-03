@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { findCompletionSource, extractTextInQuotes } from './utils';
+import { findCompletionSource, extractTextInQuotes } from '../utils/utils';
 const jsonMap = require('json-source-map');
 
 export default class JsonRenameProvider implements vscode.RenameProvider {

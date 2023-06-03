@@ -2,11 +2,11 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import JsonCompletionProvider from './jsonCompletionProvider';
-import { extractTextInQuotes } from './utils';
-import JsonDefinitionProvider from './jsonDefinitionProvider';
-import JsonReferenceProvider from './jsonReferenceProvider';
-import JsonRenameProvider from './jsonRenameProvider';
+import JsonCompletionProvider from './providers/jsonCompletionProvider';
+import JsonDefinitionProvider from './providers/jsonDefinitionProvider';
+import JsonReferenceProvider from './providers/jsonReferenceProvider';
+import JsonRenameProvider from './providers/jsonRenameProvider';
+import { extractTextInQuotes } from './utils/utils';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed

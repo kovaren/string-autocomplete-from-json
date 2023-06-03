@@ -1,5 +1,5 @@
 import { Position } from 'vscode';
-import * as Utils from '../../utils';
+import * as Utils from '../../utils/utils';
 import * as assert from 'assert';
 
 suite('Utils test suite', () => {
