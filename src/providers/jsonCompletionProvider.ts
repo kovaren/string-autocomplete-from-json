@@ -28,11 +28,15 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
 
     private getItems(source: { [key: string]: any } | string, currentKey: string, text: string, fileName: string): vscode.CompletionItem[] {
         if (this.isPrimitiveType(source)) {
-            if (text.endsWith(currentKey + '.')) {
-                return [this.createItem(source + '', fileName, CompletionItemKind.Constant)];
-            } else {
-                return [];
+            const prefix = currentKey + '.';
+            if (text.startsWith(prefix)) {
+                const suffix = text.replace(prefix, '').toLowerCase();
+                const sourceLower = source.toLowerCase();
+                if (sourceLower.startsWith(suffix) && sourceLower !== suffix) {
+                    return [this.createItem(source + '', fileName, CompletionItemKind.Constant)];
+                }
             }
+            return [];
         } else {
             const keys = Object.keys(source);
             const prefix = currentKey ? currentKey + '.' : '';
@@ -44,7 +48,17 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
                 // TODO only show description for currently selected item (see Emmet as an example)
                 return keys.map(key => this.createItem(key, fileName, CompletionItemKind.EnumMember));
             } else {
-                return [];
+                const partialKey = text.startsWith(prefix) ? text.replace(prefix, '').toLowerCase() : null;
+                if (partialKey) {
+                    return keys
+                    .filter(key => {
+                        const keyLower = key.toLowerCase();
+                        return keyLower.startsWith(partialKey) && keyLower !== partialKey;
+                    })
+                    .map(key => this.createItem(key, fileName, CompletionItemKind.EnumMember));
+                } else {
+                    return [];
+                }
             }
         }
     };
