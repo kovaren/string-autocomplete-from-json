@@ -35,7 +35,7 @@ export default class JsonReferenceProvider implements vscode.ReferenceProvider {
             let match: RegExpExecArray | null;
             const regex = new RegExp(`\\b${word}\\b`, 'g');
             while ((match = regex.exec(text)) !== null) {
-                const referencePosition = document.positionAt(match.index);
+                const referencePosition = document.positionAt(match.index + word.length);
                 const referenceLocation = new vscode.Location(document.uri, referencePosition);
                 references.push(referenceLocation);
             }

@@ -14,7 +14,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// TODO finish rename provider, test in a big repo
 	// TODO suggestions when a part of a word is already written like "USER.ADDRE"
-	// TODO put cursor at the end of the word but before the " on F12
 
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider("*", new JsonCompletionProvider(), '.'));
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider('*', new JsonDefinitionProvider()));

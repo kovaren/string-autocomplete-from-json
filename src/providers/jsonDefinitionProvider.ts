@@ -11,7 +11,6 @@ export default class JsonDefinitionProvider implements vscode.DefinitionProvider
     ) {
         // TODO Ctrl+mouseover show preview of object
         // TODO add typings to the json source map lib
-        // TODO handle jump to last value definition, not handled by lib
 
         const source = findCompletionSource(document);
         if (!source) {
@@ -23,7 +22,10 @@ export default class JsonDefinitionProvider implements vscode.DefinitionProvider
         const textInQuotes = extractTextInQuotes(text, position, true);
         const withSlashes = '/' + textInQuotes?.replace(/\./g, '/');
 
+        // + 1 to move past the first " character
+        const cursorDelta = textInQuotes?.includes('.') ? textInQuotes!.substring(textInQuotes!.lastIndexOf('.')).length : textInQuotes!.length + 1;
+
         const { key } = mapping.pointers[withSlashes];
-        return key ? new vscode.Location(vscode.Uri.file(source.localPath), new vscode.Position(key.line, key.column)) : null;
+        return key ? new vscode.Location(vscode.Uri.file(source.localPath), new vscode.Position(key.line, key.column + cursorDelta)) : null;
     }
 }
