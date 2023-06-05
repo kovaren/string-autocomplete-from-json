@@ -14,8 +14,8 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
         if (!source) {
             return null;
         }
-        const file = await vscode.workspace.openTextDocument(vscode.Uri.file(source.localPath));
-        const completionSource = JSON.parse(file.getText());
+        const sourceDocument = await vscode.workspace.openTextDocument(vscode.Uri.file(source.localPath));
+        const completionSource = JSON.parse(sourceDocument.getText());
         const text = document.lineAt(position.line).text;
         
         const textInQuotes = extractTextInQuotes(text, position);

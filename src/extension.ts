@@ -13,35 +13,33 @@ import { extractTextInQuotes } from './utils/utils';
 export function activate(context: vscode.ExtensionContext) {
 
 	// TODO finish rename provider, test in a big repo
-	// TODO suggestions when a part of a word is already written like "USER.ADDRE"
 
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider("*", new JsonCompletionProvider(), '.'));
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider('*', new JsonDefinitionProvider()));
 
 	// { language: 'json', pattern: '**​/package.json' }
 	context.subscriptions.push(vscode.languages.registerReferenceProvider('json', new JsonReferenceProvider()));
-	context.subscriptions.push(vscode.languages.registerRenameProvider('*', new JsonRenameProvider()));
+	context.subscriptions.push(vscode.languages.registerRenameProvider('html', new JsonRenameProvider()));
 
-	// Open suggestions panel on press "."
+	// Open suggestions panel on text change inside quotes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeTextDocument(async (event) => {
 			const position = vscode.window.activeTextEditor?.selection.active;
 			if (position) {
 				const text = event.document.lineAt(position.line).text;
 				const textInQuotes = extractTextInQuotes(text, position!);
-				if (!textInQuotes?.endsWith('.')) {
-					return;
+
+				if (textInQuotes !== null) {
+					await vscode.commands.executeCommand(
+						'editor.action.triggerSuggest',
+						{
+							'triggerCharacter': '',
+							'triggerKind': vscode.CompletionTriggerKind.Invoke,
+							'position': position
+						}
+					);
 				}
 			}
-
-			await vscode.commands.executeCommand(
-				'editor.action.triggerSuggest',
-				{
-					'triggerCharacter': '',
-					'triggerKind': vscode.CompletionTriggerKind.Invoke,
-					'position': position
-				}
-			);
 		})
 	);
 }
