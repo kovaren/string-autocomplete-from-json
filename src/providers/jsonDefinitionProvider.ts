@@ -19,7 +19,7 @@ export default class JsonDefinitionProvider implements vscode.DefinitionProvider
         const file = await vscode.workspace.openTextDocument(vscode.Uri.file(source.localPath));
         const mapping = jsonMap.parse(file.getText());
         const text = document.lineAt(position.line).text;
-        const textInQuotes = extractTextInQuotes(text, position, true);
+        const textInQuotes = extractTextInQuotes(text, position, true)?.trim();
         const withSlashes = '/' + textInQuotes?.replace(/\./g, '/');
 
         // + 1 to move past the first " character
