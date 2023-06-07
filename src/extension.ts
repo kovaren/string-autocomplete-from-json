@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// { language: 'json', pattern: '**​/package.json' }
 	context.subscriptions.push(vscode.languages.registerReferenceProvider('json', new JsonReferenceProvider()));
-	context.subscriptions.push(vscode.languages.registerRenameProvider('html', new JsonRenameProvider()));
+	context.subscriptions.push(vscode.languages.registerRenameProvider('*', new JsonRenameProvider()));
 
 	// Open suggestions panel on text change inside quotes
 	context.subscriptions.push(

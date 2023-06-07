@@ -6,12 +6,12 @@ export default class JsonReferenceProvider implements vscode.ReferenceProvider {
     async provideReferences(document: vscode.TextDocument, position: vscode.Position, context: vscode.ReferenceContext, token: vscode.CancellationToken) {
         const destination = await findDestinationPattern(document);
         if (!destination) {
-            return;
+            return [];
         }
         
         const wordRange = document.getWordRangeAtPosition(position);
         if (!wordRange) {
-            return;
+            return [];
         }
 
         const mapping = jsonMap.parse(document.getText());
@@ -23,7 +23,7 @@ export default class JsonReferenceProvider implements vscode.ReferenceProvider {
             return sameLine && sameStart && sameEnd;
         });
         if (!entry) {
-            return;
+            return [];
         }
 
         const word = entry[0].substring(1).replace(/\//g, '.');
