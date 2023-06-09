@@ -3,9 +3,9 @@ import * as vscode from 'vscode';
 import path = require('path');
 
 /**
- * Get text between the opening quote and the cursor inside a quoted piece of text 
+ * GetS text between the opening quote and the cursor inside a quoted piece of text. Quotes can be single or double.
  * 
- * @param text 
+ * @param text input text
  * @param position cursor position 
  * @param wholeWord return whole word up to a ".", not only up to the cursor position
  * @returns
@@ -64,12 +64,34 @@ export const extractTextInQuotes = (text: string, position: vscode.Position, who
     }
 };
 
-export const isPathAbsolute = (path: string) => {
-    return path.startsWith('/') || /^[A-Za-z]:[\\/]/.test(path);
+// TODO DOCUMENTATION
+export const isCompletionSource = (uri: vscode.Uri) => {
+    const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
+    const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
+
+    let foundDestinationPattern = null;
+    for (const { sourcePath, destinationPattern } of config) {
+        const localPath = isPathAbsolute(sourcePath) ? sourcePath : convertSlashes(workspacePath) + '/' + sourcePath;
+
+        const resolvedPath = convertSlashes(path.resolve(localPath));
+        if (resolvedPath === convertSlashes(uri.fsPath)) {
+            if (destinationPattern.startsWith('./')) {
+                foundDestinationPattern = destinationPattern.substring(2);
+            } else {
+                foundDestinationPattern = destinationPattern;
+            }
+            break;
+        }
+    }
+    if (foundDestinationPattern) {
+        return { destinationPattern: foundDestinationPattern };
+    } else {
+        return null;
+    }
 };
 
-const convertSlashes = (path: string) => path.replace(/\\/g, '/');
-
+// TODO take file path or a uri as an argument
+// fileName is the shorthand for uri.fsPath
 export const findCompletionSource = (document: vscode.TextDocument): { localPath: string, originalPath: string } | null => {
     const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
     const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
@@ -93,6 +115,7 @@ export const findCompletionSource = (document: vscode.TextDocument): { localPath
     }
 };
 
+// TODO take file path or a uri as an argument
 export const findDestinationPattern = async (document: vscode.TextDocument): Promise<{ destinationPattern: string } | null> => {
     const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
     const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
@@ -118,3 +141,9 @@ export const findDestinationPattern = async (document: vscode.TextDocument): Pro
         return null;
     }
 };
+
+export const isPathAbsolute = (path: string) => {
+    return path.startsWith('/') || /^[A-Za-z]:[\\/]/.test(path);
+};
+
+const convertSlashes = (path: string) => path.replace(/\\/g, '/');
