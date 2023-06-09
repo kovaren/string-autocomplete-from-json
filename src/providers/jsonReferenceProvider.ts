@@ -3,7 +3,7 @@ import { findDestinationPattern } from '../utils/utils';
 const jsonMap = require('json-source-map');
 
 export default class JsonReferenceProvider implements vscode.ReferenceProvider {
-    async provideReferences(document: vscode.TextDocument, position: vscode.Position, context: vscode.ReferenceContext, token: vscode.CancellationToken) {
+    async provideReferences(document: vscode.TextDocument, position: vscode.Position) {
         const destination = await findDestinationPattern(document);
         if (!destination) {
             return [];

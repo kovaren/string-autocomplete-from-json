@@ -1,51 +1,11 @@
 import * as vscode from 'vscode';
-import { findCompletionSource, extractTextInQuotes, isCompletionSource } from '../utils/utils';
 import JsonReferenceProvider from './jsonReferenceProvider';
-import { ReferenceContext } from 'vscode';
-import { CancellationToken } from 'vscode';
-const jsonMap = require('json-source-map');
+import JsonDefinitionProvider from './jsonDefinitionProvider';
 
 export default class JsonRenameProvider implements vscode.RenameProvider {
-    async provideRenameEdits(document: vscode.TextDocument, position: vscode.Position, newName: string, token: vscode.CancellationToken) {
-        return document.languageId === 'json' ? this.renameFromSource(document, position, newName) : this.renameFromDestination(document, position, newName);
-    }
-
-    async renameFromSource(document: vscode.TextDocument, position: vscode.Position, newName: string) {
-        const references = await this.findReferences(document, position);
-
-        const edit = new vscode.WorkspaceEdit();
-        for (const ref of references) {
-            const refDocument = await vscode.workspace.openTextDocument(ref.uri);
-            const range = refDocument.getWordRangeAtPosition(ref.range.start);
-            edit.replace(refDocument.uri, range!, newName);
-        }
-
-        const range = document.getWordRangeAtPosition(position);
-        if (range) {
-            edit.replace(document.uri, range, newName);
-        }
-        return edit;
-    }
-
-    async renameFromDestination(document: vscode.TextDocument, position: vscode.Position, newName: string) {
-        const source = findCompletionSource(document);
-        if (!source) {
-            return;
-        }
-
-        const sourceDocument = await vscode.workspace.openTextDocument(vscode.Uri.file(source.localPath));
-        
-        const mapping = jsonMap.parse(sourceDocument.getText());
-        const text = document.lineAt(position.line).text;
-        const textInQuotes = extractTextInQuotes(text, position, true);
-        const withSlashes = '/' + textInQuotes?.replace(/\./g, '/');
-        const map = mapping.pointers[withSlashes];
-        if (!map) {
-            return Promise.reject(`Renaming failed, no value for "${textInQuotes}" found in JSON completion source: ${sourceDocument.uri.path}`);
-        }
-        const { key } = map;
-        const location = new vscode.Position(key.line, key.column + 1);
-        const references = await this.findReferences(sourceDocument, location);
+    async provideRenameEdits(document: vscode.TextDocument, position: vscode.Position, newName: string) {
+        const { sourceDocument, location } = await this.findSource(document, position);
+        const references = await new JsonReferenceProvider().provideReferences(sourceDocument, location);
 
         const edit = new vscode.WorkspaceEdit();
         for (const ref of references) {
@@ -61,15 +21,21 @@ export default class JsonRenameProvider implements vscode.RenameProvider {
         return edit;
     }
 
-    prepareRename?(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Range | { range: vscode.Range; placeholder: string; }> {
-        if (document.languageId === 'json' && isCompletionSource(document.uri) || findCompletionSource(document)) {
-            return document.getWordRangeAtPosition(position);
-        } else {
+    async findSource(document: vscode.TextDocument, position: vscode.Position) {
+        if (document.languageId === 'json') {
+            return { sourceDocument: document, location: position };
+        }
+        const definition = await new JsonDefinitionProvider().provideDefinition(document, position);
+        if (!definition) {
             throw new Error(`Renaming failed, no completion source found for ${document.fileName}`);
         }
+
+        const location = definition.range.start;
+        const sourceDocument = await vscode.workspace.openTextDocument(definition.uri);
+        return { sourceDocument, location };
     }
 
-    private async findReferences(document: vscode.TextDocument, location: vscode.Position) {
-        return await new JsonReferenceProvider().provideReferences(document, location, {} as ReferenceContext, {} as CancellationToken);
+    prepareRename?(document: vscode.TextDocument, position: vscode.Position): vscode.ProviderResult<vscode.Range> {
+        return document.getWordRangeAtPosition(position);
     }
 }

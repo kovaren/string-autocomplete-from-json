@@ -1,4 +1,3 @@
-import { minimatch } from 'minimatch';
 import * as vscode from 'vscode';
 import { findCompletionSource, extractTextInQuotes, isPathAbsolute } from '../utils/utils';
 import { CompletionItemKind } from 'vscode';
@@ -7,8 +6,6 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
     async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
-        token: vscode.CancellationToken,
-        context: vscode.CompletionContext
     ) {
         const source = findCompletionSource(document);
         if (!source) {
@@ -17,7 +14,7 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
         const sourceDocument = await vscode.workspace.openTextDocument(vscode.Uri.file(source.localPath));
         const completionSource = JSON.parse(sourceDocument.getText());
         const text = document.lineAt(position.line).text;
-        
+
         const textInQuotes = extractTextInQuotes(text, position);
         if (textInQuotes !== null) {
             return this.getItems(completionSource, '', textInQuotes, source.originalPath);
@@ -49,16 +46,13 @@ export default class JsonCompletionProvider implements vscode.CompletionItemProv
                 return keys.map(key => this.createItem(key, fileName, CompletionItemKind.EnumMember));
             } else {
                 const partialKey = text.startsWith(prefix) ? text.replace(prefix, '').toLowerCase() : null;
-                if (partialKey) {
-                    return keys
-                    .filter(key => {
-                        const keyLower = key.toLowerCase();
-                        return keyLower.startsWith(partialKey) && keyLower !== partialKey;
-                    })
-                    .map(key => this.createItem(key, fileName, CompletionItemKind.EnumMember));
-                } else {
+                if (!partialKey) {
                     return [];
                 }
+                return keys.filter(key => {
+                    const keyLower = key.toLowerCase();
+                    return keyLower.startsWith(partialKey) && keyLower !== partialKey;
+                }).map(key => this.createItem(key, fileName, CompletionItemKind.EnumMember));
             }
         }
     };

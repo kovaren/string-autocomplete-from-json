@@ -65,31 +65,6 @@ export const extractTextInQuotes = (text: string, position: vscode.Position, who
 };
 
 // TODO DOCUMENTATION
-export const isCompletionSource = (uri: vscode.Uri) => {
-    const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
-    const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
-
-    let foundDestinationPattern = null;
-    for (const { sourcePath, destinationPattern } of config) {
-        const localPath = isPathAbsolute(sourcePath) ? sourcePath : convertSlashes(workspacePath) + '/' + sourcePath;
-
-        const resolvedPath = convertSlashes(path.resolve(localPath));
-        if (resolvedPath === convertSlashes(uri.fsPath)) {
-            if (destinationPattern.startsWith('./')) {
-                foundDestinationPattern = destinationPattern.substring(2);
-            } else {
-                foundDestinationPattern = destinationPattern;
-            }
-            break;
-        }
-    }
-    if (foundDestinationPattern) {
-        return { destinationPattern: foundDestinationPattern };
-    } else {
-        return null;
-    }
-};
-
 // TODO take file path or a uri as an argument
 // fileName is the shorthand for uri.fsPath
 export const findCompletionSource = (document: vscode.TextDocument): { localPath: string, originalPath: string } | null => {

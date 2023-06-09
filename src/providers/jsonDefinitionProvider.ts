@@ -1,4 +1,3 @@
-import { minimatch } from 'minimatch';
 import * as vscode from 'vscode';
 import { findCompletionSource, extractTextInQuotes, isPathAbsolute } from '../utils/utils';
 const jsonMap = require('json-source-map');
@@ -7,7 +6,6 @@ export default class JsonDefinitionProvider implements vscode.DefinitionProvider
     async provideDefinition(
         document: vscode.TextDocument,
         position: vscode.Position,
-        token: vscode.CancellationToken
     ) {
         // TODO Ctrl+mouseover show preview of object
         // TODO add typings to the json source map lib
