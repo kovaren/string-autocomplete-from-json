@@ -64,10 +64,17 @@ export const extractTextInQuotes = (text: string, position: vscode.Position, who
     }
 };
 
-// TODO DOCUMENTATION
-// TODO take file path or a uri as an argument
-// fileName is the shorthand for uri.fsPath
+/**
+ * Finds a JSON code completion file for a document, if it has one
+ * @param document text document for which to find a completion source
+ * @returns object with local path and original path of the JSON completion source
+ */
 export const findCompletionSource = (document: vscode.TextDocument): { localPath: string, originalPath: string } | null => {
+    // JSON file as a destination is ignored
+    if (document.languageId === 'json') {
+        return null;
+    }
+
     const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
     const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
 
@@ -90,7 +97,11 @@ export const findCompletionSource = (document: vscode.TextDocument): { localPath
     }
 };
 
-// TODO take file path or a uri as an argument
+/**
+ * Finds a pattern in which a JSON completion source should be applied, if there is one
+ * @param document JSON completion source for which to find a destination pattern
+ * @returns object with Glob destination pattern
+ */
 export const findDestinationPattern = async (document: vscode.TextDocument): Promise<{ destinationPattern: string } | null> => {
     const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
     const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
@@ -117,8 +128,6 @@ export const findDestinationPattern = async (document: vscode.TextDocument): Pro
     }
 };
 
-export const isPathAbsolute = (path: string) => {
-    return path.startsWith('/') || /^[A-Za-z]:[\\/]/.test(path);
-};
+const isPathAbsolute = (path: string) => path.startsWith('/') || /^[A-Za-z]:[\\/]/.test(path);
 
 const convertSlashes = (path: string) => path.replace(/\\/g, '/');

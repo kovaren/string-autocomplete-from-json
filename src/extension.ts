@@ -10,7 +10,6 @@ import JsonRenameProvider from './providers/jsonRenameProvider';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider("*", new JsonCompletionProvider(), '.'));
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider('*', new JsonDefinitionProvider()));
 	context.subscriptions.push(vscode.languages.registerReferenceProvider('json', new JsonReferenceProvider()));

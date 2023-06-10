@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { findCompletionSource, extractTextInQuotes, isPathAbsolute } from '../utils/utils';
+import { findCompletionSource, extractTextInQuotes } from '../utils/utils';
 import { CompletionItemKind } from 'vscode';
 
 export default class JsonCompletionProvider implements vscode.CompletionItemProvider {
