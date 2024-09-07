@@ -75,7 +75,7 @@ export const findCompletionSource = (document: vscode.TextDocument): { localPath
         return null;
     }
 
-    const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
+    const { config } = vscode.workspace.getConfiguration('string-autocomplete');
     const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
 
     let originalPath = null;
@@ -103,7 +103,7 @@ export const findCompletionSource = (document: vscode.TextDocument): { localPath
  * @returns object with Glob destination pattern
  */
 export const findDestinationPattern = async (document: vscode.TextDocument): Promise<{ destinationPattern: string } | null> => {
-    const { config } = vscode.workspace.getConfiguration('jsonCodeCompletion');
+    const { config } = vscode.workspace.getConfiguration('string-autocomplete');
     const workspacePath = vscode.workspace.workspaceFolders![0].uri.fsPath;
 
     let foundDestinationPattern = null;

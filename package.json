@@ -1,7 +1,7 @@
 {
-  "name": "i18n-code-completion",
-  "displayName": "i18n-code-completion",
-  "description": "i18n code completion",
+  "name": "string-autocomplete-from-json",
+  "displayName": "String Autocomplete from JSON",
+  "description": "Code completion in strings from a JSON source",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.73.0"
@@ -14,16 +14,10 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "i18n-code-completion.helloWorld",
-        "title": "Hello World"
-      }
-    ],
     "configuration": {
-      "title": "JSON Code completion",
+      "title": "String Autocomplete from JSON",
       "properties": {
-        "jsonCodeCompletion.config": {
+        "string-autocomplete.config": {
           "type": "array",
           "items": {
             "type": "object",
@@ -34,7 +28,7 @@
               },
               "destinationPattern": {
                 "type": "string",
-                "description": "Glob pattern of files to provide the code completion in (only .ts, .js and .html are supported)."
+                "description": "Glob pattern of files to provide the code completion in."
               }
             }
           },

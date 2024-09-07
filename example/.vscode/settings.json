@@ -1,17 +1,24 @@
 {
-    "jsonCodeCompletion.config": [{
-        "sourcePath": "folder3/folder4/superLongNameFolder1/superLongNameFolder2/superLongNameFolder3/superLongNameFolder4/superLongNameFolder5/superNestedExample.json",
-        "destinationPattern": "folder3/folder4/superLongNameFolder1/**"
-    }, {
-        "sourcePath": "./example.json",
-        "destinationPattern": "./*.{tsx,ts,js,html}"
-    }, {
-        "sourcePath": "folder1/folder2/nestedExample.json",
-        "destinationPattern": "folder3/**/*.{html,jsx}"
-    }
-],
-"emmet.excludeLanguages": [
-    "markdown",
-],
-"emmet.preferences": {},
+    "string-autocomplete.config": [
+        {
+            "sourcePath": "folder3/folder4/superLongNameFolder1/superLongNameFolder2/superLongNameFolder3/superLongNameFolder4/superLongNameFolder5/superNestedExample.json",
+            "destinationPattern": "folder3/folder4/superLongNameFolder1/**"
+        },
+        {
+            "sourcePath": "strings.json",
+            "destinationPattern": "component.html"
+        },
+        {
+            "sourcePath": "./example.json",
+            "destinationPattern": "./*.{tsx,ts,js,html,json}"
+        },
+        {
+            "sourcePath": "folder1/folder2/nestedExample.json",
+            "destinationPattern": "folder3/**/*.{html,jsx}"
+        }
+    ],
+    "emmet.excludeLanguages": [
+        "markdown",
+    ],
+    "emmet.preferences": {},
 }

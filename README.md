@@ -1,71 +1,43 @@
-# json-code-completion
+# String Autocomplete from JSON
 
-Simple extenstion that provides code completion based on JSON files.
+Code completion in strings based on a JSON, with simple configuration and no import of the JSON required.
+
+The primary use case for this extension is localization JSON files like in [ngx-translate](http://www.ngx-translate.com/) but it can be used in other scenarios.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Code completion
 
-For example if there is an image subfolder under your extension project workspace:
+JSON key suggestions inside a string
 
-\!\[feature X\]\(images/feature-x.png\)
+### Go to definition
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Press F12 or Ctrl+Click on a key inside a string to jump to the JSON file with its definition
 
-## Requirements
+### Find references
 
-minimatch
+Press Shift+F12 on a key in a JSON file to find all files containing strings with that key
+
+### Rename symbol
+
+Press F2 on a JSON key to rename it everywhere (in the JSON completion source and in all references, no matter)
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+This extension contributes the following settings in **.vscode/settings.json**:
+
+* `string-autocomplete.config`: mapping of JSON files and files to provide code completion in, where:
+    * `sourcePath` is the path of the source JSON file. It can be either absolute or relative to workspace root directory.
+    * `destinationPattern` is a Glob pattern of files to provide the code completion in.
 
 For example:
 
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+```json
+"string-autocomplete.config": [{
+    "sourcePath": "src/assets/strings.json",
+    "destinationPattern": "src/app/**/*.{tsx,ts,js,html}"
+}, {
+    "sourcePath": "src/assets/locale.json",
+    "destinationPattern": "src/components/**/*.{tsx,ts}"
+}]
+```
