@@ -2,6 +2,8 @@
   "name": "string-autocomplete-from-json",
   "displayName": "String Autocomplete from JSON",
   "description": "Code completion in strings from a JSON source",
+  "icon": "images/icon-small.png",
+  "publisher": "ivan-kovarin",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.73.0"
