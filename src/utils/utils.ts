@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import path = require('path');
 
 /**
- * GetS text between the opening quote and the cursor inside a quoted piece of text. Quotes can be single or double.
+ * Retrieves text between the opening quote and the cursor inside a quoted piece of text. Quotes can be single or double.
  * 
  * @param text input text
  * @param position cursor position 

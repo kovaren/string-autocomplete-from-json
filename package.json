@@ -4,7 +4,7 @@
   "description": "Code completion in strings from a JSON source",
   "icon": "images/icon-small.png",
   "publisher": "ivan-kovarin",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.73.0"
   },
@@ -16,7 +16,7 @@
     "json"
   ],
   "categories": [
-    "Other"
+    "Programming Languages"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -37,12 +37,12 @@
               },
               "destinationPattern": {
                 "type": "string",
-                "description": "Glob pattern of files to provide the code completion in."
+                "description": "Glob pattern of files in which to provide code completion."
               }
             }
           },
-          "default": "",
-          "description": "Configuration of source files and destination files for code completion."
+          "default": [],
+          "description": "Mapping of source files and destination patterns for code completion."
         }
       }
     }
