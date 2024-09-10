@@ -4,7 +4,7 @@ Code completion in strings based on a JSON, with simple configuration and no imp
 
 The primary use case for this extension is localization JSON files like in [ngx-translate](http://www.ngx-translate.com/) but it can be used in other scenarios.
 
-![demo](./images/demo-small.gif)
+![demo](images/demo-small.gif)
 
 ## Features
 

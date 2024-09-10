@@ -4,10 +4,11 @@
   "description": "Code completion in strings from a JSON source",
   "icon": "images/icon-small.png",
   "publisher": "ivan-kovarin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.73.0"
   },
+  "repository": "https://github.com/kovaren/string-autocomplete-from-json",
   "keywords": [
     "ngx-translate",
     "autocomplete",
